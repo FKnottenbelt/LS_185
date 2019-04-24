@@ -2,6 +2,7 @@
 
 require 'pg'
 
+
 DB = PG.connect(dbname: 'expenses')
 
 def list_expenses
@@ -9,7 +10,7 @@ def list_expenses
 
   result.each do |row|
     columns = [ row["id"].rjust(3),
-                row["created_on"].rjust(10),
+                row["created_on"][0..10].rjust(10),
                 row["amount"].rjust(12),
                 row["memo"] ]
 
