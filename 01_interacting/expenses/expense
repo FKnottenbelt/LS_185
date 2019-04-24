@@ -32,8 +32,9 @@ def display_help
 end
 
 def add_expenses(amount, memo)
-  DB.exec("INSERT INTO expenses (amount, memo)
-           VALUES (#{amount}, '#{memo}');")
+  sql = "INSERT INTO expenses (amount, memo)
+         VALUES ($1, $2);"
+  DB.exec_params(sql, [amount, memo]).values
 end
 
 case ARGV.first
