@@ -2,10 +2,10 @@
 
 require 'pg'
 
-db = PG.connect(dbname: 'expenses')
+DB = PG.connect(dbname: 'expenses')
 
-def list_expenses(db)
-  result = db.exec('SELECT * FROM expenses ORDER BY created_on DESC;')
+def list_expenses
+  result = DB.exec('SELECT * FROM expenses ORDER BY created_on DESC;')
 
   result.each do |row|
     columns = [ row["id"].rjust(3),
@@ -31,9 +31,20 @@ def display_help
   )
 end
 
+def add_expenses(amount, memo)
+  DB.exec("INSERT INTO expenses (amount, memo)
+           VALUES (#{amount}, '#{memo}');")
+end
+
 case ARGV.first
  when 'list'
-   list_expenses(db)
+   list_expenses
+ when 'add'
+   amount = ARGV[1]
+   memo = ARGV[2]
+   # Kernel.abort will exit with code 1 and a message
+   abort "You must provide an amount and memo." unless amount && memo
+   add_expenses(amount, memo)
  else
    display_help
 end
