@@ -3,3 +3,15 @@
 require 'pg'
 
 puts 'Hello world'
+
+db = PG.connect(dbname: 'expenses')
+result = db.exec('SELECT * FROM expenses ORDER BY created_on DESC;')
+
+result.each do |row|
+  columns = [ row["id"].rjust(3),
+              row["created_on"].rjust(10),
+              row["amount"].rjust(12),
+              row["memo"] ]
+
+  puts columns.join(" | ")
+end
