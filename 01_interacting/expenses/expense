@@ -20,6 +20,10 @@ class CLI
        # Kernel.abort will exit with code 1 and a message
        abort "You must provide an amount and memo." unless amount && memo
        @application.add_expenses(amount, memo)
+     when 'search'
+       query = arguments[1]
+       abort "You must provide an seach term." unless query
+       @application.search_expenses(query)
      else
        display_help
     end
@@ -48,15 +52,7 @@ class ExpenseData
 
   def list_expenses
     result = @db.exec('SELECT * FROM expenses ORDER BY created_on DESC;')
-
-    result.each do |row|
-      columns = [ row["id"].rjust(3),
-                  row["created_on"][0..10].rjust(10),
-                  row["amount"].rjust(12),
-                  row["memo"] ]
-
-      puts columns.join(" | ")
-    end
+    display_expenses(result)
   end
 
   def add_expenses(amount, memo)
@@ -65,6 +61,24 @@ class ExpenseData
     @db.exec_params(sql, [amount, memo]).values
   end
 
+  def search_expenses(query)
+    sql = "SELECT * FROM expenses WHERE memo ILIKE $1"
+    result = @db.exec_params(sql, ["%#{query}%"])
+    display_expenses(result)
+  end
+
+  private
+
+  def display_expenses(expenses)
+    expenses.each do |row|
+      columns = [ row["id"].rjust(3),
+                  row["created_on"][0..10].rjust(10),
+                  row["amount"].rjust(12),
+                  row["memo"] ]
+
+      puts columns.join(" | ")
+    end
+  end
 end
 
 CLI.new.run(ARGV)
