@@ -3,7 +3,7 @@
 # run by $ ./expense
 
 require 'pg'
-
+require 'io/console'
 class CLI
 
   def initialize
@@ -28,6 +28,11 @@ class CLI
        id = arguments[1]
        abort "You must provide an id of the record to delete." unless id
        @application.delete_expense(id)
+     when 'clear'
+       puts "This will remove all expenses. Are you sure? (y/n)"
+       answer = $stdin.getch
+       exit 0 if answer.downcase != 'y'
+       @application.delete_all_expenses
      else
        display_help
     end
@@ -56,6 +61,7 @@ class ExpenseData
 
   def list_expenses
     result = @db.exec('SELECT * FROM expenses ORDER BY created_on DESC;')
+    abort "There are no expenses to list" if result.ntuples == 0
     display_expenses(result)
   end
 
@@ -79,6 +85,11 @@ class ExpenseData
     result = @db.exec_params(sql, [id])
     puts "The following expense has been deleted:"
     display_expenses(result)
+  end
+
+  def delete_all_expenses
+    @db.exec("DELETE FROM expenses;")
+    puts "All expenses have been deleted."
   end
 
   private
