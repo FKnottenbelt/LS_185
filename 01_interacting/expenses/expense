@@ -4,6 +4,8 @@
 
 require 'pg'
 require 'io/console'
+
+
 class CLI
 
   def initialize
@@ -62,6 +64,7 @@ class ExpenseData
   def list_expenses
     result = @db.exec('SELECT * FROM expenses ORDER BY created_on DESC;')
     abort "There are no expenses to list" if result.ntuples == 0
+    display_count(result)
     display_expenses(result)
   end
 
@@ -74,6 +77,8 @@ class ExpenseData
   def search_expenses(query)
     sql = "SELECT * FROM expenses WHERE memo ILIKE $1"
     result = @db.exec_params(sql, ["%#{query}%"])
+    abort "There are no expenses to list" if result.ntuples == 0
+    display_count(result)
     display_expenses(result)
   end
 
@@ -92,17 +97,28 @@ class ExpenseData
     puts "All expenses have been deleted."
   end
 
+  def display_count(result)
+    puts "There is #{result.ntuples} expense" if result.ntuples == 1
+    puts "There are #{result.ntuples} expenses" if result.ntuples > 1
+  end
+
   private
 
   def display_expenses(expenses)
+    total = 0.0
     expenses.each do |row|
       columns = [ row["id"].rjust(3),
                   row["created_on"][0..10].rjust(10),
                   row["amount"].rjust(12),
                   row["memo"] ]
 
+      total += row["amount"].to_f
       puts columns.join(" | ")
     end
+
+    puts '-' * 50
+    puts "Total #{total.round(2).to_s.rjust(26)}"
+
   end
 end
 
