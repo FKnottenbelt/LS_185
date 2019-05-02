@@ -10,7 +10,7 @@ talk about how to optimize SQL queries from within your
 applications.
 
 # Detailed Syllabus
-Interacting with a Database in Code (LS_185)
+Interacting with a Database in Code
 
     Getting Started
     Executing SQL Statements from Ruby
@@ -28,7 +28,7 @@ Interacting with a Database in Code (LS_185)
     Counting and Totaling Expenses
     Creating the Schema Automatically
 
-Database-backed Web Applications (LS_185)
+Database-backed Web Applications
 
     Getting Started
     Project Overview
