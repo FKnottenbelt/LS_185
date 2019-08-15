@@ -13,6 +13,7 @@ Small command line application to track expenses
 
 run: `$ ./expense`
 
+run a command: `$ ./expense add 4.50 coffee`
 
 ***
 - Learning to write a command line application that connects to
